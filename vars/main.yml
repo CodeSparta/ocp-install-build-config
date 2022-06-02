@@ -5,12 +5,14 @@
 management_hostname: cluster-manager
 cluster_name: ocp
 cluster_domain: example.com
-#base_dir: /opt/ocp
-base_dir: "~"
+base_dir: "."
 mac_prefix: aa:bb:cc
 
+### SECRETS
+secrets_dir: "{{ base_dir }}/secrets"
+
 ### REGISTRY
-registry_volume: "{{ base_dir }}/registry"
+registry_dir: "{{ base_dir }}/registry"
 registry_port: 5000
 
 ## NETWORKING INFRA
@@ -20,12 +22,12 @@ machine_network: 192.168.1
 machine_cidr: "{{ machine_network }}.0/24"
 
 ##RHCOS_IMAGE_CACHE
-rhcos_image_cache: "{{ base_dir}}/rhcos_images"
+rhcos_image_cache: "{{ base_dir }}/rhcos_images"
 rhcos_image_name:
 rhcos_bootstrap_image_sha:
 
 ## OPENSHIFT
-ocp_install_dir: "{{ base_dir }}/ocp-install"
+cluster_configs_dir: "{{ base_dir }}/clusterconfigs"
 network_type: OVNKubernetes
 api_ip: "{{ machine_network }}.2"
 ingress_ip: "{{ machine_network }}.3"
@@ -73,5 +75,5 @@ networking:
     ip_address: "{{ machine_network }}.151"
     ip_prefix_length: 24
 
-node_redfish_username: batman
-node_redfish_password: 'brucewayne'
+node_redfish_username: "redfish_user"
+node_redfish_password: "redfish_password"

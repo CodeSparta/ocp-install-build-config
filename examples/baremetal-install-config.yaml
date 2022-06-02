@@ -1,0 +1,159 @@
+apiVersion: v1
+baseDomain: example.com
+metadata:
+  name: ocp
+networking:
+  machineCIDR: 192.168.1.0/24
+  networkType: OVNKubernetes
+compute:
+- name: worker
+  replicas: 2
+controlPlane:
+  name: master
+  replicas: 3
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIP: 192.168.1.2
+    ingressVIP: 192.168.1.3
+    bootstrapOSImage: http://cluster-manager.ocp.example.com:8000/?sha256=
+    provisioningNetwork: Disabled
+    externalBridge: baremetal
+    hosts:
+      - name: ocp-node0
+        role: master
+        bmc:
+          address: redfish-virtualmedia://192.168.0.4/redfish/v1/Systems/1
+          username: redfish_user
+          password: redfish_password
+          disableCertificateVerification: True
+        bootMACAddress: aa:bb:cc:dd:ee:8c
+        rootDeviceHints:
+         deviceName: /dev/nvme0n1
+        bootMode: UEFISecureBoot
+      - name: ocp-node1
+        role: master
+        bmc:
+          address: redfish-virtualmedia://192.168.0.5/redfish/v1/Systems/1
+          username: redfish_user
+          password: redfish_password
+          disableCertificateVerification: True
+        bootMACAddress: aa:bb:cc:dd:ee:dd
+        rootDeviceHints:
+         deviceName: /dev/nvme0n1
+        bootMode: UEFISecureBoot
+      - name: ocp-node2
+        role: master
+        bmc:
+          address: redfish-virtualmedia://192.168.0.6/redfish/v1/Systems/1
+          username: redfish_user
+          password: redfish_password
+          disableCertificateVerification: True
+        bootMACAddress: aa:bb:cc:dd:ee:13
+        rootDeviceHints:
+         deviceName: /dev/nvme0n1
+        bootMode: UEFISecureBoot
+      - name: ocp-node3
+        role: worker
+        bmc:
+          address: redfish-virtualmedia://192.168.0.7/redfish/v1/Systems/1
+          username: redfish_user
+          password: redfish_password
+          disableCertificateVerification: True
+        bootMACAddress: aa:bb:cc:dd:ee:22
+        rootDeviceHints:
+         deviceName: /dev/nvme0n1
+        bootMode: UEFISecureBoot
+        networkConfig:
+          interfaces:
+          - name: eno3
+            description: disable eno3
+            type: ethernet
+            state: up
+            ipv4:
+              enabled: false
+          - name: eno4
+            description: disable eno4
+            type: ethernet
+            state: up
+            ipv4:
+              enabled: false
+          - name: bond0
+            description: Bond enslaving eno3 and eno4
+            type: bond
+            state: up
+            ipv4:
+              enabled: false
+            link-aggregation:
+              mode: active-backup
+              options:
+                miimon: '140'
+              slaves:
+              - eno3
+              - eno4
+            mtu: 1450
+          - name: br1
+            description: Linux bridge with bond0 as a port
+            type: linux-bridge
+            state: up
+            ipv4:
+              address:
+              - ip: 192.168.1.151
+                prefix-length: 24
+              enabled: true
+            bridge:
+              options:
+                stp:
+                  enabled: false
+              port:
+                - name: bond0
+                  vlan: {}
+imageContentSources:
+- mirrors:
+  - cluster-manager.ocp.example.com:5000/openshift/release
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - cluster-manager.ocp.example.com:5000/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+pullSecret: '{
+  "stackOrchestrator" : "swarm",
+  "auths" : {
+    "quay.io" : {
+
+    }
+  },
+  "credsStore" : "desktop",
+  "HttpHeaders" : {
+    "User-Agent" : "Docker-Client/19.03.13 (darwin)"
+  },
+  "experimental" : "disabled"
+}'
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9ZIVbyw+EO7WcpenTnSgFxu/yYwSTAzVksGJwkqsDdyljomUX50Kg9qGbaBiOEegZ45IkyEZK+9TDvyCQDA6Fo0oIZMrrSerYvEjKxJmNCxmxQafAUKpcpkxf0tq591N53C+O1eaqcYFY8PoCJ8lCsR0hn+vkB5Qt6bj41aUM3UWzSd5Eox9bvbzK29H/pvzsy8l+n7i8LnOV/b79YK4J6wuQyOJBdhGHB56Zz7dQfoxK05m1MGl5IPCF4J2Cu9QJZFB0hpU6/olpHEAYeND/ZZESppY7BF2HBAmlhOfqvOQjZU9CFTX524CYjaawm1kmymKkNJAnLUUjwBBLvJc9zenaGrwG3q44YYKKlWZf2hQCHBEEWnSOXquRgumMXU6qfzx3VdzVKGOYL2o/cDdoLeBLDhIDxAjjGe5MtG/KPGLACDTDJG9hp6vCN/61oHQRXhAJxP0xgw0lgdrrTD+xsJ8JreUP5Pfuo472GzvinKo6TYFDtRYeBgaCeUKrRXBjildAy9E/k2g4hVJW+X2gjjUsI7hJIj9DOryBmqUDIt7+5L4lD6b7sqdDYn+IzUCc2/QeIgdU3tTOBgnZ3Ve5P7ECAZ7ySqOB4eE8uLqDBlrj49qwonRk382wDsJRzMOQYZi2AzAhDsEJYWInrkppYWh/OgZOj5ko7VVNPmkxCw== core@ocp.kubeadmin'
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIEVTCCAr2gAwIBAgIUFREOE0BRdzcKpTQJH/duzw0YR/UwDQYJKoZIhvcNAQEL
+  BQAwLDELMAkGA1UEBhMCVVMxHTAbBgNVBAMMFCR7bG9jYWxfcmVnaXN0cnklOip9
+  MB4XDTIyMDYwMjE3MTA1N1oXDTIzMDYwMjE3MTA1N1owLDELMAkGA1UEBhMCVVMx
+  HTAbBgNVBAMMFCR7bG9jYWxfcmVnaXN0cnklOip9MIIBojANBgkqhkiG9w0BAQEF
+  AAOCAY8AMIIBigKCAYEA4iG6dgAmTXFkzp/O1wiqgJB++YjKLA0dx7WCKo8kq3h1
+  iVdxI9uR7JKxdhhHvenJt3t9/kzbw4W1abGr0AjHo7G/bO5mYhQBq2orysxGlWfd
+  +xYyGVRfwrwVG2jlqXQyfqZpD5SgJv/4WsewOn41r+2HAXB1OmEgkANes0gZJELJ
+  EAmK7CgzXpzcjaYM4LvoUGH1/BAVH+w2xTPxGba36Rx3zsg55cUia6E+97V8lwre
+  PPhZ+muqiAqyFS8DfP2/B/NGwxNtu7Uz3y7+KGgILV/6qzuMotgynijbaRWjejqU
+  xgA5JkdQlU62lm/eB8zsDZUAgwfclX5hKP0GQ9V+srYw7aVrfUjyGzuR+f9TQbzZ
+  Tbb/3/saKjlCbYvZxmC/MMeQGZyG84Fl/+qOVX2t0hg+XGBDq6Cg9hU6EQn+7KLW
+  5BskOV3nTJZtNzytqoLCci9lDdyQ4Y6pIMn780IFNwhpOYBJPQd7WtK9cpqkIMrx
+  FVGPAQ6EgRXF/fNyCwhvAgMBAAGjbzBtMB0GA1UdDgQWBBSiJaOrtTZ+35CfhN28
+  CYJQqQIq4zAfBgNVHSMEGDAWgBSiJaOrtTZ+35CfhN28CYJQqQIq4zAPBgNVHRMB
+  Af8EBTADAQH/MBoGA1UdEQQTMBGHBH8AAAGCCWxvY2FsaG9zdDANBgkqhkiG9w0B
+  AQsFAAOCAYEAT+YS0VpHtP1/NeWbDb0tDtZp6idlzuo9wmJI1YdAmZBQ3gaFW1nX
+  6Lk6MrhTLYm2RS4U5o80nXxZS19xJ1+RImFOvqd//i73uztL+kZmIt5v9y9GMBVT
+  DNa6uzrhyREXaT2mBjWftaMBP4pdaAsfyIxnepWwZNt9D7y9unfOlJoIgwHF9p92
+  GGAfG5pqFUPGi8ZhrcMpgIjmdBUB6cAoGY7a8s4DEzky6cUBpBdvD719SiRn+2oG
+  /6faucu490VKCVCTN/cYe1+uTIoXJtPqIQHq1PrPn7CCMMeKG3VRGwIX3vt7XbC0
+  JuIh8Q1FyrbfzmIik0V7m7/ikzt0RRInirXwwCobUa7tKdm95uo7ln60Gee3wlff
+  DiQEbLqsA0AcEDO+hfccFgXSgM4E/4vHe54wjuCt88WdQ/uA2t8Efil6cYRcKKcd
+  vuqptFKoLQC8Hqo/XbrSeZiLY5aE33leIGSnTUZoHEeFsVOIXVT9DRNtpn2vSTLa
+  StVnlAkmG8Nf
+  -----END CERTIFICATE-----

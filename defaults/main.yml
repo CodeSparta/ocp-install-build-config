@@ -1,2 +1,17 @@
 ---
 # defaults file for ocp-install-build-config
+
+### ENV
+management_hostname: cluster-manager
+cluster_name: ocp
+cluster_domain: example.com
+base_dir: "."
+
+### SECRETS
+secrets_dir: "{{ base_dir }}/secrets"
+
+### REGISTRY
+registry_dir: "{{ base_dir }}/registry"
+
+## OPENSHIFT
+cluster_configs_dir: "{{ base_dir }}/clusterconfigs"
