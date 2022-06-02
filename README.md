@@ -1,4 +1,4 @@
-Role Name
+ocp-install-build-config
 =========
 
 A brief description of the role goes here.

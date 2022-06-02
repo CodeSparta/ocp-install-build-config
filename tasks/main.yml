@@ -1,2 +1,22 @@
 ---
-# tasks file for ocp-install-build-config
+  # tasks file for ocp-install-build-config
+  - name: "{{ role_name }} | Create the install directory"
+    file:
+      path: "{{ ocp_install_dir }}"
+      state: directory
+      mode: '0744'
+  
+  - name: "{{ role_name }} | Generate the OpenShift install-config.yaml"
+    template:
+      src: install-config.yaml.j2
+      dest: '{{ ocp_install_dir }}/install-config.yaml'
+  
+  # - name: "{{ role_name }} | Copy install-config.yaml"
+  #   copy:
+  #     src: '{{ ocp_install_dir }}/install-config.yaml'
+  #     dest: "{{ base_dir }}"
+  
+  # - name: Create folder for cluster configs
+  #   file:
+  #     path: ~/clusterconfigs
+  #     state: directory
