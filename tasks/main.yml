@@ -15,7 +15,13 @@
     path: "{{ secrets_dir }}/id_rsa_kubeadmin"
     comment: "core@ocp.kubeadmin"
   
+- name: "{{ role_name }} | Check if Install Type is Baremetal"
+  set_fact:
+    config_template: "baremetal-install-config"
+  when: install_type == "baremetal"
+    
+
 - name: "{{ role_name }} | Generate the OpenShift install-config.yaml"
   template:
-    src: install-config.yaml.j2
+    src: "{{ config_template }}.yaml.j2"
     dest: "{{ cluster_configs_dir }}/install-config.yaml"
