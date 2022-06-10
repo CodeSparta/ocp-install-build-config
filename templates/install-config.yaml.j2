@@ -21,4 +21,4 @@ imageContentSources:
 pullSecret: '{{ lookup('file', '{{ ansible_user_dir }}/.docker/config.json') }}'
 sshKey: '{{ lookup('file', '{{ secrets_dir }}/id_rsa_kubeadmin.pub') }}'
 additionalTrustBundle: |
-{{ lookup('file', '{{ registry_dir }}/certs/domain.crt') | indent( width=2, indentfirst=True)}}
+{{ lookup('file', '{{ base_dir }}/certs/ssl.cert') | indent( width=2, first=true )}}
