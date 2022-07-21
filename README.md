@@ -5,13 +5,22 @@ This role is used to create the starting point for a `install-config.yaml` file 
 
 Role Variables
 --------------
+### CONFIG
+| Variable                 | Required | Default Value      |
+|--------------------------|----------|--------------------|
+| config_template          | yes      | `install-config`   |
+
+| Options                  |
+|--------------------------|
+| aws-install-congfig      |
+| install-config           |
+| baremetal-install-config |
 
 ### ENV
 | Variable                 | Required | Default Value      |
 |--------------------------|----------|--------------------|
 | install_type             | no       | `default`          |
-| config_template          | no       | `install-config`   |
-| management_hostname      | yes      | `cluster-manager`  |
+| management_hostname      | yes      | `registry`  |
 | cluster_name             | yes      | `ocp`              |
 | cluster_domain           | yes      | `example.com`      |
 | base_dir                 | yes      | `.`                |
@@ -83,6 +92,14 @@ Include as many items under `networking` list as needed:
 |--------------------------|----------|---------------------------------|
 | node_redfish_username    | no       | `redfish_user`                  |
 | node_redfish_password    | no       | `redfish_password`              |
+
+### AWS
+| Variable                 | Required | Default Value           |
+|--------------------------|----------|-------------------------|
+| rhcos_ami                | yes      | `ami-0db1ef3c6695fc441` |
+| aws_region               | yes      | `us-gov-west`           |
+| deployer_name            | yes      | `example`               |
+| bill_code                | yes      | `0`                     |
 
 Example Playbook
 ----------------
