@@ -1,10 +1,15 @@
 ---
 # defaults file for ocp-install-build-config
 
+### Select config_template
+### 1.aws-install-congfig
+### 2. install-config
+### 3. baremetal-install-config
+config_template: install-config
+
 ### ENV
 install_type: default
-config_template: install-config
-management_hostname: cluster-manager
+management_hostname: registry
 cluster_name: ocp
 cluster_domain: example.com
 base_dir: "."
@@ -60,7 +65,7 @@ nodes:
     boot_mac: "{{ mac_prefix }}:dd:ee:13"
     ten_gig_mac_2: "{{ mac_prefix }}:dd:ee:14"
     ten_gig_mac_3: "{{ mac_prefix }}:dd:ee:15"
-    ten_gig_mac_4: "{{ mac_prefix }}:dd:ee:16"   
+    ten_gig_mac_4: "{{ mac_prefix }}:dd:ee:16"
   - name: "{{ node_hostname_schema }}3"
     role: worker
     bmc_address: "{{ management_network }}.7"
@@ -82,3 +87,9 @@ networking:
 ### REDFISH
 node_redfish_username: "redfish_user"
 node_redfish_password: "redfish_password"
+
+### AWS
+aws_region: us-gov-west
+rhcos_ami: ami-0db1ef3c6695fc441
+deployer_name: example
+bill_code: 0
