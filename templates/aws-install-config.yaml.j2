@@ -15,9 +15,9 @@ compute:
   platform:
     aws:
       zones:
-      - us-gov-west-1a
-      - us-gov-west-1b
-      - us-gov-west-1c
+      - {{ aws_region }}-1a
+      - {{ aws_region }}-1b
+      - {{ aws_region }}-1c
       rootVolume:
         iops: 2000
         size: 500
@@ -29,9 +29,9 @@ controlPlane:
   platform:
     aws:
       zones:
-      - us-gov-west-1a
-      - us-gov-west-1b
-      - us-gov-west-1c
+      - {{ aws_region }}-1a
+      - {{ aws_region }}t-1b
+      - {{ aws_region }}-1c
       rootVolume:
         iops: 4000
         size: 500
@@ -50,35 +50,17 @@ networking:
   - 172.30.0.0/16
 platform:
   aws:
-#    hostedZone:
-    amiID: ami-0db1ef3c6695fc441
-    region: us-gov-west-1
+#    hostedZone: If using replace with UID of private route53 hostedzone 
+    amiID: {{ rhcos_ami }}
+    region: {{ aws_region}}-1
     userTags:
-      adminContact:
-      costCenter:
+      adminContact: {{ deployer_name }}
+      costCenter: {{ bill_code }}
     subnets:
-    - subnet-08d6b86680472da5d
-    - subnet-090e9efa98de17052
-    - subnet-07f248e5f5ceefb10
+    - {{ subnet-1 }}
+    - {{ subnet-2 }}
+    - {{ subnet-3}}
 fips: true
 publish: Internal
-pullSecret: '{
-        "auths": {
-                "cloud.openshift.com": {
-                        "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K3Jobmdwc2podWx0ejFzdGlxenZzZnFwandma3ZtYnlvdzNnZnZsbjo2UFE2RTU2TEtPVlMwVUNMRVBVWjVMNjZQMlBHQ0RFNURZM0hIMzJKNVhRMkpYQUtJTzlGQ042ODBPNDJUQ0g1"
-                },
-                "ip-10-1-28-229.us-gov-west-1.compute.internal:8443": {
-                        "auth": "dXNlcjpwYXNzd29yZA=="
-                },
-                "quay.io": {
-                        "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K3Jobmdwc2podWx0ejFzdGlxenZzZnFwandma3ZtYnlvdzNnZnZsbjo2UFE2RTU2TEtPVlMwVUNMRVBVWjVMNjZQMlBHQ0RFNURZM0hIMzJKNVhRMkpYQUtJTzlGQ042ODBPNDJUQ0g1"
-                },
-                "registry.connect.redhat.com": {
-                        "auth": "NTIxMzE0NDJ8dWhjLTFTdElRWlZzRlFQaldGS1ZNQllPdzNnZnZsbjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXlORE5sTVdFd05HRXpZVE0wTldRek9EVmxZV0ZtT1RZNU1qazFaVEZqTmlKOS5XMjhoNmF1Wmw0d0ZIZFljbmRUcDllSWpqMDJyMnVQbi01aWloMFQ4b29YV2tuajJpY0kxYjgtckFMNHBIaXV0a3cwNUNTa3gxZGpNZ1E1bERTN2RsQXJ3V3pfeTNYZzFsV204WWFEMVFlZnBLUnF2V2JYbGZkZlk1bUpoNEV3MkZEeExLbWtPRXZ4ZGp1RkJQdDZFTmIwbjZwZDJad21Pbml2cmU3OEwxbTlJU3kwQXRldzRxMzF0ZzFfODJOYTZIaEdtR0dBbmlodUlwMmE1Zkp3d2RFOUx1UFNYMW1zZEkzeF90VzhnSHNZWkNXR0hrRlVLSmdzSmswMm5PZW1JVGxiSFpyUlZxMWg3UkROOEpibERfYldON1VxQXd2QWozMGUzdzViZWNIWk9EbUY4SXExQkNHdG94Z3NDTUhoZGZ6ZDRnVWZOT0ptZ0V3TldpQzVuS2ZuZENZUlhzMk4ycENlYXZaV0syNkJZeWlyM2cyTWlpb2h1YndRWm50RGFUemZFX1lRT1pncVRHeGNoSGxXZlFaaV9DTnZoU29YNVpaX2ZIalpyT01mbDRvZHJEWi1aNnI0UHBweGpzZXYzWHM3bFFFYUVOeF9UQ2hLd09Od3NMdGtWNmFkNGNOMjVZZV9kRXdVS08zcWtSdGlJSm14NWZDY2VJOF82d0RCeUZUQ1hLU2FhblVzS09fd3o1NC1TR0xDNHU0MjBrMm84SWZ1Q2J3ak9GOS1QS1h2UjJCOV9JMWdQc2o0R1NCLUVuRnFkMm9jXzRFN01SWUQ0dVdobjVIZDA1NUc0RFhjZTJBUFFxTmRLSWNCTTE5Z1dfY2VFSnE4ZEZjVmM1NHkxZnRxOGd6dW5xazZlRi1GbmJLSGI1Z1R0Y0dEMjBwYkVGUmFWcFI0VVZpTQ=="
-                },
-                "registry.redhat.io": {
-                        "auth": "NTIxMzE0NDJ8dWhjLTFTdElRWlZzRlFQaldGS1ZNQllPdzNnZnZsbjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXlORE5sTVdFd05HRXpZVE0wTldRek9EVmxZV0ZtT1RZNU1qazFaVEZqTmlKOS5XMjhoNmF1Wmw0d0ZIZFljbmRUcDllSWpqMDJyMnVQbi01aWloMFQ4b29YV2tuajJpY0kxYjgtckFMNHBIaXV0a3cwNUNTa3gxZGpNZ1E1bERTN2RsQXJ3V3pfeTNYZzFsV204WWFEMVFlZnBLUnF2V2JYbGZkZlk1bUpoNEV3MkZEeExLbWtPRXZ4ZGp1RkJQdDZFTmIwbjZwZDJad21Pbml2cmU3OEwxbTlJU3kwQXRldzRxMzF0ZzFfODJOYTZIaEdtR0dBbmlodUlwMmE1Zkp3d2RFOUx1UFNYMW1zZEkzeF90VzhnSHNZWkNXR0hrRlVLSmdzSmswMm5PZW1JVGxiSFpyUlZxMWg3UkROOEpibERfYldON1VxQXd2QWozMGUzdzViZWNIWk9EbUY4SXExQkNHdG94Z3NDTUhoZGZ6ZDRnVWZOT0ptZ0V3TldpQzVuS2ZuZENZUlhzMk4ycENlYXZaV0syNkJZeWlyM2cyTWlpb2h1YndRWm50RGFUemZFX1lRT1pncVRHeGNoSGxXZlFaaV9DTnZoU29YNVpaX2ZIalpyT01mbDRvZHJEWi1aNnI0UHBweGpzZXYzWHM3bFFFYUVOeF9UQ2hLd09Od3NMdGtWNmFkNGNOMjVZZV9kRXdVS08zcWtSdGlJSm14NWZDY2VJOF82d0RCeUZUQ1hLU2FhblVzS09fd3o1NC1TR0xDNHU0MjBrMm84SWZ1Q2J3ak9GOS1QS1h2UjJCOV9JMWdQc2o0R1NCLUVuRnFkMm9jXzRFN01SWUQ0dVdobjVIZDA1NUc0RFhjZTJBUFFxTmRLSWNCTTE5Z1dfY2VFSnE4ZEZjVmM1NHkxZnRxOGd6dW5xazZlRi1GbmJLSGI1Z1R0Y0dEMjBwYkVGUmFWcFI0VVZpTQ=="
-                }
-        }
-}'
-sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDWX5OvAN2Y/nKqKXltzD+5mCeCFcYI9HbLqLO2ImYEGALMiR4HFeRiJ6pIgsA6rahHTFhMbYWdKI1kzEFnnJRUd1ObT3g5z93QG6l5jIoWPKo5AXZQqZqzORxgidLBEYX6PYlKwvJD20h1bUsajnu5kLy2mHe62qrl8pipbqg5Xc40OPjKLeXjI0TME2CWPZxFf9B3/Pnobrtpw5c2A4aGYn8xLzXm1WmzGDAMsmh0OodTw/NTnAOXX0GGdjZbb8dBw00OV+9nQDB366mSNwpIg2oDMKj0Jll1WWwxYBRLAVl/tlrOSd3xSdljQSl5T+E5HrUeHNEe75qcyr6bCJtr/INvWam8PNPZ3SUMg8HcGkBpO0ckQpK5f9x75h0ZW6JzZlWwyFeJYA/2sLwy9F57WYG3U3EoePjOYydePsCaUz1Uy/rLcwFSKogM7eaujF5fizUg+qhq7lXq2ekHAiIDJE51/0Fymsltk8BE5UBrVTgwPLrtuixfSackyLpu0hJDi8mzM3YuOxg0kE01/cVFoVgNJKttwqZD4urqueCeRnB4pcQ1bnWmMT9ol1CswDHXiiEIebC3WSFyIFlK3tbkGX+XS5BkoZs0ycxvb4CMsC6T5gcDmIhwukYVSrnBZoBOwJVusE1S95FNxnLM/KWH/J3z1Oxv5Pzz6gfpHdJhpQ== core@ocp.kubeadmin'
+pullSecret: '{{ lookup('file', '{{ ansible_user_dir }}/.docker/config.json') }}'
+sshKey: '{{ lookup('file', '{{ secrets_dir }}/id_rsa_kubeadmin.pub') }}'
